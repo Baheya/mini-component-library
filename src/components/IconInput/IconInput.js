@@ -6,54 +6,72 @@ import { COLORS } from '../../constants';
 import Icon from '../Icon';
 import VisuallyHidden from '../VisuallyHidden';
 
-const SIZES = {
+const STYLES = {
   small: {
-    icon: 10,
-    '--font-size': 14 + 'px',
-    '--border-bottom': 1 + 'px',
+    fontSize: 14,
+    iconSize: 16,
+    borderThickness: 1,
+    height: 24,
   },
   large: {
-    icon: 16,
-    '--font-size': 16 + 'px',
-    '--border-bottom': 2 + 'px',
+    fontSize: 18,
+    iconSize: 24,
+    borderThickness: 2,
+    height: 36,
   },
 };
 
-const IconInput = ({ label, icon, width = 250, size, placeholder }) => {
-  const style = SIZES[size];
+const IconInput = ({ label, icon, width = 250, size, ...delegated }) => {
+  const styles = STYLES[size];
+
+  // TODO: validate size
+
   return (
-    <FakeInput tabIndex="0" style={style} width={width}>
+    <Wrapper>
       <VisuallyHidden>{label}</VisuallyHidden>
-      <Icon id={icon} size={style.icon} />
-      <Input style={style} placeholder={placeholder} />
-    </FakeInput>
+      <IconWrapper style={{ '--size': styles.iconSize + 'px' }}>
+        <Icon id={icon} size={styles.iconSize} />
+      </IconWrapper>
+      <TextInput
+        {...delegated}
+        style={{
+          '--width': width + 'px',
+          '--height': styles.height / 16 + 'rem',
+          '--border-thickness': styles.borderThickness + 'px',
+          '--font-size': styles.fontSize / 16 + 'rem',
+        }}
+      />
+    </Wrapper>
   );
 };
 
-const FakeInput = styled.div`
-  display: flex;
-  align-items: center;
-  border-bottom: var(--border-bottom) solid ${COLORS.black};
-  padding-bottom: 0.1em;
-  width: ${(props) => `${props.width}px`};
-  outline-offset: 2px;
+const Wrapper = styled.label`
+  display: block;
+  position: relative;
   color: ${COLORS.gray700};
-
   &:hover {
     color: ${COLORS.black};
   }
 `;
 
-const Input = styled.input`
-  border: none;
-  outline: none;
-  padding: 0;
-  margin-inline-start: 0.3em;
-  font-size: var(--font-size);
-  font-weight: 800;
-  color: inherit;
-  width: 100%;
+const IconWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  height: var(--size);
+`;
 
+const TextInput = styled.input`
+  width: var(--width);
+  height: var(--height);
+  font-size: var(--font-size);
+  border: none;
+  border-bottom: var(--border-thickness) solid ${COLORS.black};
+  padding-left: var(--height);
+  color: inherit;
+  font-weight: 700;
+  outline-offset: 2px;
   &::placeholder {
     font-weight: 400;
     color: ${COLORS.gray500};
